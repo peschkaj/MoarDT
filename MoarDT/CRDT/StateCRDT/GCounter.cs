@@ -25,23 +25,21 @@ namespace MoarDT
         // TODO: implement ICRDT with Merge, Value
         // TODO: Move DefaultClientId to abstract base class
         internal Dictionary<string, ulong> Payload { get; set; }
-        private ulong _currentValue;
         private string _clientId;
 
         public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, ulong> counterContents = null)
         {
             _clientId = String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId;
-            _currentValue = currentValue;
 
-            if (counterContents != null)
-                Payload = counterContents;
-            else
-                Payload = new Dictionary<string, ulong>();
+            if (currentValue != default(ulong))
+                Payload.Add(_clientId, currentValue);
+
+            Payload = counterContents ?? new Dictionary<string, ulong>();
         }
 
         public ulong Value {
             get {
-                return Payload.Sum(x => x.Value);
+                return Payload.Aggregate(0UL, (a, b) => a + b.Value);
             }
         }
 
@@ -60,9 +58,7 @@ namespace MoarDT
         {
             unchecked
             {
-                var result = _currentValue.GetHashCode();
-                result = (result * 397) ^ Payload.GetHashCode();
-                return result;
+                return Payload.GetHashCode();
             }
         }
 
