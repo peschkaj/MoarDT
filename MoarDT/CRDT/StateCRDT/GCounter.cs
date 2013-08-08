@@ -25,7 +25,7 @@ namespace MoarDT
         // TODO: implement ICRDT with Merge, Value
         // TODO: Move DefaultClientId to abstract base class
         internal Dictionary<string, ulong> Payload { get; set; }
-        private string _clientId;
+        private readonly string _clientId;
 
         public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, ulong> counterContents = null)
         {
@@ -70,10 +70,7 @@ namespace MoarDT
             if (ReferenceEquals(this, obj))
                 return true;
 
-            if (obj.GetType() != typeof(ulong))
-                return false;
-
-            return Equals((GCounter)obj);
+            return obj is GCounter && Equals((GCounter)obj);
         }
 
         public bool Equals(GCounter other)
@@ -82,19 +79,12 @@ namespace MoarDT
             if (ReferenceEquals(null, other))
                 return false;
 
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Payload.Equals(other.Payload);
+            return ReferenceEquals(this, other) || Payload.Equals(other.Payload);
         }
 
         public static GCounter Merge(GCounter gca, GCounter gcb)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
-            var gcList = new List<Dictionary<string, ulong>>();
-            gcList.Add(gca.Payload);
-            gcList.Add(gcb.Payload);
-
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
             var newContents = new Dictionary<string, ulong>();
 
@@ -108,7 +98,7 @@ namespace MoarDT
                     newContents[key] = Math.Max(gca.Payload[key], gcb.Payload[key]);
             }
 
-            return new GCounter(clientId: DefaultClientId(), counterContents: newContents);
+            return new GCounter(DefaultClientId(), counterContents: newContents);
         }
 
         private static string DefaultClientId()
