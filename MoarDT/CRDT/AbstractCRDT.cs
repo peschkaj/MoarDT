@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright 2013  Brent Ozar Unlimited
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,32 +13,13 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-using MoarDT.CRDT.StateCRDT;
-using NUnit.Framework;
-
-namespace MoarDT.Tests.CRDT.StateCRDT
+namespace MoarDT.CRDT
 {
-    [TestFixture()]
-    public class GCounterTest
+    public abstract class AbstractCRDT
     {
-        [Test()]
-        public void MergingTwoGCountersReturnsTheLargestValue()
+        internal static string DefaultClientId()
         {
-            var gca = new GCounter();
-            var gcb = new GCounter();
-
-            gca++;
-            gca++;
-            gcb++;
-
-            var gca_val = gca.Value;
-            var gcb_val = gcb.Value;
-
-            var gcnew = GCounter.Merge(gca, gcb);
-
-            gcnew.Value.ShouldEqual(gca_val);
-            gcnew.Value.ShouldNotEqual(gcb_val);
+            return System.Net.Dns.GetHostName();
         }
     }
 }
-

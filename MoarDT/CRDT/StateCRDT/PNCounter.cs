@@ -17,69 +17,67 @@ using System.Collections.Generic;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class PNCounter
+    public class PNCounter : AbstractCRDT
     {
         // TODO: implement ISerializable
-        internal GCounter positive;
-        internal GCounter negative;
-        private ulong _currentValue;
+        internal GCounter P;
+        internal GCounter N;
+        private readonly string _clientId;
 
         public ulong Value {
-            get { 
-                Merge();
-                return _currentValue;
-            }
+            get { return P.Value - N.Value; }
         }
 
-        public PNCounter (ulong currentValue = default(ulong))
+        public PNCounter (string clientId = null,
+                          Dictionary<string, ulong> p = null, 
+                          Dictionary<string, ulong> n = null)
         {
-            positive = new GCounter();
-            negative = new GCounter();
-            _currentValue = currentValue;
+            _clientId = String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId;
+            P = new GCounter(_clientId, counterContents: p);
+            N = new GCounter(_clientId, counterContents: n);
         }
 
         public static PNCounter operator ++(PNCounter pnc)
         {
-            return pnc.Increment(1);
+            return pnc.Increment();
         }
 
         public PNCounter Increment(ulong value = 1)
         {
-            positive.Increment(value);
+            P.Increment(value);
             return this;
         }
 
         public PNCounter Increment(IEnumerable<ulong> collection)
         {
-//            positive.Increment(collection);
+//            P.Increment(collection);
             return this;
         }
 
         public static PNCounter operator --(PNCounter pnc)
         {
-            return pnc.Decrement(1);
+            return pnc.Decrement();
         }
 
         public PNCounter Decrement(ulong value = 1)
         {
-            negative.Increment(value);
+            N.Increment(value);
             return this;
         }
 
         public PNCounter Decrement(IEnumerable<ulong> collection)
         {
-//            negative.Increment(collection);
+//            N.Increment(collection);
             return this;
         }
 
-        private void Merge()
+        public static PNCounter Merge(PNCounter pna, PNCounter pnb, string clientId = null)
         {
-            var t = _currentValue;
-
-            t += positive.Value;
-            t -= negative.Value;
-
-            _currentValue = t;
+            return new PNCounter(clientId ?? DefaultClientId())
+                {
+                    P = GCounter.Merge(pna.P, pnb.P),
+                    N = GCounter.Merge(pna.N, pnb.N)
+                };
         }
 
         public override bool Equals(object obj)
@@ -90,10 +88,7 @@ namespace MoarDT.CRDT.StateCRDT
             if (ReferenceEquals(this, obj))
                 return true;
 
-            if (obj.GetType() != typeof(ulong))
-                return false;
-
-            return Equals((PNCounter)obj);
+            return obj.GetType() == typeof(PNCounter) && Equals((PNCounter)obj);
         }
 
         public bool Equals(PNCounter other)
@@ -109,12 +104,13 @@ namespace MoarDT.CRDT.StateCRDT
         public override int GetHashCode()
         {
             unchecked {
-                var result = _currentValue.GetHashCode();
-                result = (result * 397) ^ positive.GetHashCode();
-                result = (result * 397) ^ negative.GetHashCode();
+                var result = P.GetHashCode();
+                result = (result * 397) ^ N.GetHashCode();
                 return result;
             }
         }
     }
+
+    
 }
 

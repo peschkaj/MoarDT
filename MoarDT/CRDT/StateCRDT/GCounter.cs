@@ -12,14 +12,15 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using MoarDT.Extensions;
 
-namespace MoarDT
+namespace MoarDT.CRDT.StateCRDT
 {
-    public class GCounter 
+    public class GCounter : AbstractCRDT
     {
         // TODO: Implement ISerializable
         // TODO: implement ICRDT with Merge, Value
@@ -45,7 +46,7 @@ namespace MoarDT
 
         public static GCounter operator ++(GCounter gc)
         {
-            return gc.Increment(1);
+            return gc.Increment();
         }
 
         public GCounter Increment(ulong item = 1)
@@ -79,7 +80,21 @@ namespace MoarDT
             if (ReferenceEquals(null, other))
                 return false;
 
-            return ReferenceEquals(this, other) || Payload.Equals(other.Payload);
+            if (ReferenceEquals(this, other))
+                return true;
+
+            if (Payload.Equals(other.Payload))
+                return true;
+
+            var keys = Payload.Keys.Union(other.Payload.Keys);
+
+            return keys.All(key =>
+                {
+                    if (Payload.ContainsKey(key) && other.Payload.ContainsKey(key))
+                        return Payload[key] <= other.Payload[key];
+
+                    return !Payload.ContainsKey(key) || other.Payload.ContainsKey(key);
+                });
         }
 
         public static GCounter Merge(GCounter gca, GCounter gcb)
@@ -101,10 +116,6 @@ namespace MoarDT
             return new GCounter(DefaultClientId(), counterContents: newContents);
         }
 
-        private static string DefaultClientId()
-        {
-            return System.Net.Dns.GetHostName();
-        }
     }
 }
 
