@@ -86,15 +86,9 @@ namespace MoarDT.CRDT.StateCRDT
             if (Payload.Equals(other.Payload))
                 return true;
 
-            var keys = Payload.Keys.Union(other.Payload.Keys);
-
-            return keys.All(key =>
-                {
-                    if (Payload.ContainsKey(key) && other.Payload.ContainsKey(key))
-                        return Payload[key] <= other.Payload[key];
-
-                    return !Payload.ContainsKey(key) || other.Payload.ContainsKey(key);
-                });
+            return Payload.Count() == other.Payload.Count()
+                   && Payload.Keys.Intersect(other.Payload.Keys).Count() == Payload.Count()
+                   && Payload.Equals(other.Payload);
         }
 
         public static GCounter Merge(GCounter gca, GCounter gcb)
