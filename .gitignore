@@ -16,6 +16,7 @@ TestResults
 # Build results
 [Dd]ebug/
 [Rr]elease/
+[Tt]est-[Rr]esults/
 x64/
 *_i.c
 *_p.c
@@ -36,6 +37,7 @@ x64/
 *.vspscc
 *.vssscc
 .builds
+*.userprefs
 
 # Visual C++ cache files
 ipch/

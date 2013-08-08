@@ -24,7 +24,7 @@ namespace MoarDT
         // TODO: Implement ISerializable
         // TODO: implement ICRDT with Merge, Value
         // TODO: Move DefaultClientId to abstract base class
-        internal Dictionary<string, ulong> _contents { get; set; }
+        internal Dictionary<string, ulong> Payload { get; set; }
         private ulong _currentValue;
         private string _clientId;
 
@@ -34,14 +34,14 @@ namespace MoarDT
             _currentValue = currentValue;
 
             if (counterContents != null)
-                _contents = counterContents;
+                Payload = counterContents;
             else
-                _contents = new Dictionary<string, ulong>();
+                Payload = new Dictionary<string, ulong>();
         }
 
         public ulong Value {
             get {
-                return _contents[_clientId];
+                return Payload.Sum(x => x.Value);
             }
         }
 
@@ -52,7 +52,7 @@ namespace MoarDT
 
         public GCounter Increment(ulong item = 1)
         {
-            _contents[_clientId] = _contents.ValueOrDefault(_clientId) + item;
+            Payload[_clientId] = Payload.ValueOrDefault(_clientId) + item;
             return this;
         }
 
@@ -61,7 +61,7 @@ namespace MoarDT
             unchecked
             {
                 var result = _currentValue.GetHashCode();
-                result = (result * 397) ^ _contents.GetHashCode();
+                result = (result * 397) ^ Payload.GetHashCode();
                 return result;
             }
         }
@@ -89,29 +89,27 @@ namespace MoarDT
             if (ReferenceEquals(this, other))
                 return true;
 
-            var keys = _contents.Keys.Union(other._contents.Keys);
-
-            return keys.All(k => _contents[k] <= other._contents[k]);
+            return Payload.Equals(other.Payload);
         }
 
         public static GCounter Merge(GCounter gca, GCounter gcb)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var gcList = new List<Dictionary<string, ulong>>();
-            gcList.Add(gca._contents);
-            gcList.Add(gcb._contents);
+            gcList.Add(gca.Payload);
+            gcList.Add(gcb.Payload);
 
-            var keys = gca._contents.Keys.Union(gcb._contents.Keys);
+            var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
             var newContents = new Dictionary<string, ulong>();
 
             foreach (var key in keys)
             {
-                if (!gca._contents.ContainsKey(key) && gcb._contents.ContainsKey(key))
-                    newContents[key] = gcb._contents[key];
-                else if (gca._contents.ContainsKey(key) && !gcb._contents.ContainsKey(key))
-                    newContents[key] = gca._contents[key];
+                if (!gca.Payload.ContainsKey(key) && gcb.Payload.ContainsKey(key))
+                    newContents[key] = gcb.Payload[key];
+                else if (gca.Payload.ContainsKey(key) && !gcb.Payload.ContainsKey(key))
+                    newContents[key] = gca.Payload[key];
                 else
-                    newContents[key] = Math.Max(gca._contents[key], gcb._contents[key]);
+                    newContents[key] = Math.Max(gca.Payload[key], gcb.Payload[key]);
             }
 
             return new GCounter(clientId: DefaultClientId(), counterContents: newContents);
