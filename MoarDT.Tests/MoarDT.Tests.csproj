@@ -38,7 +38,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup>
-    <Compile Include="CRDT\StateCRDT\GCounter.cs" />
+    <Compile Include="CRDT\StateCRDT\GCounterTest.cs" />
+    <Compile Include="CRDT\StateCRDT\PNCounterTest.cs" />
     <Compile Include="Extensions\UnitTestExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

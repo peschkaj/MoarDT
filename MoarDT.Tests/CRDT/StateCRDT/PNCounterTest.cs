@@ -1,4 +1,4 @@
-//
+﻿//
 //  Copyright 2013  Jeremiah Peschka
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,11 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-using System;
-using System.Collections.Generic;
 
-namespace MoarDT.Extensions
+
+namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
 {
-    public static class DictionaryExtensions
+    class PNCounterTest
     {
-
-        public static TValue ValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
-        {
-            return dict.ContainsKey(key) ? dict[key] : default(TValue);
-        }
     }
 }
-
