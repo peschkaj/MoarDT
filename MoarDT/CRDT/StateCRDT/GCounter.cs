@@ -24,13 +24,12 @@ namespace MoarDT.CRDT.StateCRDT
     {
         // TODO: Implement ISerializable
         // TODO: implement ICRDT with Merge, Value
-        // TODO: Move DefaultClientId to abstract base class
         internal Dictionary<string, ulong> Payload { get; set; }
         private readonly string _clientId;
 
         public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, ulong> counterContents = null)
         {
-            _clientId = String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId;
+            _clientId = clientId ?? DefaultClientId();
 
             if (currentValue != default(ulong))
                 Payload.Add(_clientId, currentValue);
@@ -107,10 +106,9 @@ namespace MoarDT.CRDT.StateCRDT
                     newContents[key] = Math.Max(gca.Payload[key], gcb.Payload[key]);
             }
 
-            return new GCounter(String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId, 
+            return new GCounter(clientId ?? DefaultClientId(), 
                                 counterContents: newContents);
         }
-
     }
 }
 

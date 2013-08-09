@@ -13,6 +13,7 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace MoarDT.CRDT.StateCRDT
@@ -48,12 +49,6 @@ namespace MoarDT.CRDT.StateCRDT
             return this;
         }
 
-        public PNCounter Increment(IEnumerable<ulong> collection)
-        {
-//            P.Increment(collection);
-            return this;
-        }
-
         public static PNCounter operator --(PNCounter pnc)
         {
             return pnc.Decrement();
@@ -65,18 +60,12 @@ namespace MoarDT.CRDT.StateCRDT
             return this;
         }
 
-        public PNCounter Decrement(IEnumerable<ulong> collection)
-        {
-//            N.Increment(collection);
-            return this;
-        }
-
         public static PNCounter Merge(PNCounter pna, PNCounter pnb, string clientId = null)
         {
             return new PNCounter(clientId ?? DefaultClientId())
                 {
-                    P = GCounter.Merge(pna.P, pnb.P),
-                    N = GCounter.Merge(pna.N, pnb.N)
+                    P = GCounter.Merge(pna.P, pnb.P, clientId ?? DefaultClientId()),
+                    N = GCounter.Merge(pna.N, pnb.N, clientId ?? DefaultClientId())
                 };
         }
 
@@ -98,7 +87,7 @@ namespace MoarDT.CRDT.StateCRDT
             if (ReferenceEquals(this, other))
                 return true;
 
-            return Equals(Value, other.Value);
+            return P.Equals(other.P) && N.Equals(other.N);
         }
 
         public override int GetHashCode()
@@ -110,7 +99,5 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
     }
-
-    
 }
 
