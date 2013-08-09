@@ -91,7 +91,7 @@ namespace MoarDT.CRDT.StateCRDT
                    && Payload.Equals(other.Payload);
         }
 
-        public static GCounter Merge(GCounter gca, GCounter gcb)
+        public static GCounter Merge(GCounter gca, GCounter gcb, string clientId = null)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
@@ -107,7 +107,8 @@ namespace MoarDT.CRDT.StateCRDT
                     newContents[key] = Math.Max(gca.Payload[key], gcb.Payload[key]);
             }
 
-            return new GCounter(DefaultClientId(), counterContents: newContents);
+            return new GCounter(String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId, 
+                                counterContents: newContents);
         }
 
     }

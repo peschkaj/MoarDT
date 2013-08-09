@@ -31,13 +31,37 @@ namespace MoarDT.Tests.CRDT.StateCRDT
             gca++;
             gcb++;
 
-            var gca_val = gca.Value;
-            var gcb_val = gcb.Value;
+            var gcaVal = gca.Value;
+            var gcbVal = gcb.Value;
 
             var gcnew = GCounter.Merge(gca, gcb);
 
-            gcnew.Value.ShouldEqual(gca_val);
-            gcnew.Value.ShouldNotEqual(gcb_val);
+            gcnew.Value.ShouldEqual(gcaVal);
+            gcnew.Value.ShouldNotEqual(gcbVal);
+        }
+
+        [Test]
+        public void ValuesConverge()
+        {
+            var gca = new GCounter("1");
+            var gcb = new GCounter("2");
+            var gcc = new GCounter("3");
+
+            gca++;
+            gcb.Increment(10);
+            gcc.Increment(4);
+
+            var gcResult = GCounter.Merge(GCounter.Merge(gca, gcb), gcc);
+
+            gcResult.Value.ShouldEqual(15UL);
+        }
+
+        [Test]
+        public void NewGCountersAreZero()
+        {
+            var gca = new GCounter();
+
+            gca.Value.ShouldEqual(0UL);
         }
     }
 }
