@@ -35,8 +35,10 @@ namespace MoarDT.CRDT.StateCRDT
             Payload = counterContents ?? new Dictionary<string, ulong>();
         }
 
-        public ulong Value {
-            get {
+        public ulong Value 
+        {
+            get 
+            {
                 return Payload.Aggregate(0UL, (a, b) => a + b.Value);
             }
         }
