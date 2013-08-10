@@ -14,9 +14,37 @@
 //    limitations under the License.
 
 
+using NUnit.Framework;
+using MoarDT.CRDT.StateCRDT;
+using MoarDT.Extensions;
+
 namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
 {
-    class PNCounterTest
+    [TestFixture]
+    public class PNCounterTest
     {
+        [Test]
+        public void ValueTests()
+        {
+            var pna = new PNCounter();
+            var pnb = new PNCounter();
+            var pnc = new PNCounter();
+
+            pna.Increment(5);
+            pna.Increment(10);
+
+            pnb++;
+            pnb.Increment(2);
+            pnb++;
+
+            pnc.Decrement();
+
+            pna.Value.ShouldEqual(15);
+
+            pnb.Value.ShouldEqual(4);
+
+            pnc.Value.ShouldBeLessThan(0);
+            pnc.Value.ShouldEqual(-1);
+        }
     }
 }

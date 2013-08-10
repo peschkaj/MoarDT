@@ -18,6 +18,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace MoarDT.Tests.Extensions
@@ -41,6 +42,16 @@ namespace MoarDT.Tests.Extensions
         }
 
         public static void ShouldBeGreaterThan(this long? actual, long? expected)
+        {
+            Assert.GreaterOrEqual(actual, expected);
+        }
+
+        public static void ShouldBeLessThan(this BigInteger actual, BigInteger expected)
+        {
+            Assert.LessOrEqual(actual, expected);
+        }
+
+        public static void ShouldBeGreaterThan(this BigInteger actual, BigInteger expected)
         {
             Assert.GreaterOrEqual(actual, expected);
         }

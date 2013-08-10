@@ -14,6 +14,7 @@
 //    limitations under the License.
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Collections.Generic;
 
 namespace MoarDT.CRDT.StateCRDT
@@ -24,13 +25,17 @@ namespace MoarDT.CRDT.StateCRDT
         internal GCounter N;
         private readonly string _clientId;
 
-        public ulong Value {
-            get { return P.Value - N.Value; }
+        public BigInteger Value 
+        {
+            get 
+            { 
+                return P.Value - N.Value; 
+            }
         }
 
         public PNCounter (string clientId = null,
-                          Dictionary<string, ulong> p = null, 
-                          Dictionary<string, ulong> n = null)
+                          Dictionary<string, BigInteger> p = null, 
+                          Dictionary<string, BigInteger> n = null)
         {
             _clientId = String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId;
             P = new GCounter(_clientId, counterContents: p);
@@ -42,7 +47,7 @@ namespace MoarDT.CRDT.StateCRDT
             return pnc.Increment();
         }
 
-        public PNCounter Increment(ulong value = 1)
+        public PNCounter Increment(int value = 1)
         {
             P.Increment(value);
             return this;
@@ -53,7 +58,7 @@ namespace MoarDT.CRDT.StateCRDT
             return pnc.Decrement();
         }
 
-        public PNCounter Decrement(ulong value = 1)
+        public PNCounter Decrement(int value = 1)
         {
             N.Increment(value);
             return this;

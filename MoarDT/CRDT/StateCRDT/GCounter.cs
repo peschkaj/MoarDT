@@ -15,6 +15,7 @@
 
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Collections.Generic;
 using MoarDT.Extensions;
 
@@ -22,24 +23,24 @@ namespace MoarDT.CRDT.StateCRDT
 {
     public class GCounter : AbstractCRDT
     {
-        internal Dictionary<string, ulong> Payload { get; set; }
+        internal Dictionary<string, BigInteger> Payload { get; set; }
         private readonly string _clientId;
 
-        public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, ulong> counterContents = null)
+        public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
         {
             _clientId = clientId ?? DefaultClientId();
 
             if (currentValue != default(ulong))
                 Payload.Add(_clientId, currentValue);
 
-            Payload = counterContents ?? new Dictionary<string, ulong>();
+            Payload = counterContents ?? new Dictionary<string, BigInteger>();
         }
 
-        public ulong Value 
+        public BigInteger Value 
         {
             get 
             {
-                return Payload.Aggregate(0UL, (a, b) => a + b.Value);
+                return Payload.Aggregate((BigInteger)0, (a, b) => a + b.Value);
             }
         }
 
@@ -48,7 +49,7 @@ namespace MoarDT.CRDT.StateCRDT
             return gc.Increment();
         }
 
-        public GCounter Increment(ulong item = 1)
+        public GCounter Increment(int item = 1)
         {
             Payload[_clientId] = Payload.ValueOrDefault(_clientId) + item;
             return this;
@@ -94,7 +95,7 @@ namespace MoarDT.CRDT.StateCRDT
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
-            var newContents = new Dictionary<string, ulong>();
+            var newContents = new Dictionary<string, BigInteger>();
 
             foreach (var key in keys)
             {
@@ -103,7 +104,7 @@ namespace MoarDT.CRDT.StateCRDT
                 else if (gca.Payload.ContainsKey(key) && !gcb.Payload.ContainsKey(key))
                     newContents[key] = gca.Payload[key];
                 else
-                    newContents[key] = Math.Max(gca.Payload[key], gcb.Payload[key]);
+                    newContents[key] = gca.Payload[key] > gcb.Payload[key] ? gca.Payload[key] : gcb.Payload[key];
             }
 
             return new GCounter(clientId ?? DefaultClientId(), 
