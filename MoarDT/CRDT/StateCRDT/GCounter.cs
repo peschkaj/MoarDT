@@ -22,8 +22,6 @@ namespace MoarDT.CRDT.StateCRDT
 {
     public class GCounter : AbstractCRDT
     {
-        // TODO: Implement ISerializable
-        // TODO: implement ICRDT with Merge, Value
         internal Dictionary<string, ulong> Payload { get; set; }
         private readonly string _clientId;
 

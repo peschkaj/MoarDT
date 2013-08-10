@@ -20,7 +20,6 @@ namespace MoarDT.CRDT.StateCRDT
 {
     public class PNCounter : AbstractCRDT
     {
-        // TODO: implement ISerializable
         internal GCounter P;
         internal GCounter N;
         private readonly string _clientId;
