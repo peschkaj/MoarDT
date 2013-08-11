@@ -23,7 +23,6 @@ namespace MoarDT.CRDT.StateCRDT
     {
         internal GCounter P;
         internal GCounter N;
-        private readonly string _actor;
 
         public BigInteger Value 
         {
@@ -37,9 +36,9 @@ namespace MoarDT.CRDT.StateCRDT
                           Dictionary<string, BigInteger> p = null, 
                           Dictionary<string, BigInteger> n = null)
         {
-            _actor = String.IsNullOrEmpty(actor) ? DefaultActorId() : actor;
-            P = new GCounter(_actor, counterContents: p);
-            N = new GCounter(_actor, counterContents: n);
+            Actor = actor ?? DefaultActorId();
+            P = new GCounter(Actor, counterContents: p);
+            N = new GCounter(Actor, counterContents: n);
         }
 
         public static PNCounter operator ++(PNCounter pnc)
@@ -49,7 +48,7 @@ namespace MoarDT.CRDT.StateCRDT
 
         public PNCounter Increment(int value = 1)
         {
-            return Increment(_actor, value);
+            return Increment(Actor, value);
         }
 
         public PNCounter Increment(string actor, int value = 1)
@@ -65,7 +64,7 @@ namespace MoarDT.CRDT.StateCRDT
 
         public PNCounter Decrement(int value = 1)
         {
-            return Decrement(_actor, value);
+            return Decrement(Actor, value);
         }
 
         public PNCounter Decrement(string actor, int value = 1)
@@ -74,12 +73,12 @@ namespace MoarDT.CRDT.StateCRDT
             return this;
         }
 
-        public static PNCounter Merge(PNCounter pna, PNCounter pnb, string clientId = null)
+        public static PNCounter Merge(PNCounter pna, PNCounter pnb, string actor = null)
         {
-            return new PNCounter(clientId ?? DefaultActorId())
+            return new PNCounter(actor ?? DefaultActorId())
                 {
-                    P = GCounter.Merge(pna.P, pnb.P, clientId ?? DefaultActorId()),
-                    N = GCounter.Merge(pna.N, pnb.N, clientId ?? DefaultActorId())
+                    P = GCounter.Merge(pna.P, pnb.P, actor ?? DefaultActorId()),
+                    N = GCounter.Merge(pna.N, pnb.N, actor ?? DefaultActorId())
                 };
         }
 
@@ -91,7 +90,7 @@ namespace MoarDT.CRDT.StateCRDT
             if (ReferenceEquals(this, obj))
                 return true;
 
-            return obj.GetType() == typeof(PNCounter) && Equals((PNCounter)obj);
+            return obj is PNCounter && Equals((PNCounter)obj);
         }
 
         public bool Equals(PNCounter other)
@@ -109,6 +108,7 @@ namespace MoarDT.CRDT.StateCRDT
             unchecked {
                 var result = P.GetHashCode();
                 result = (result * 397) ^ N.GetHashCode();
+                result = (result * 397) ^ Actor.GetHashCode();
                 return result;
             }
         }

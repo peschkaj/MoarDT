@@ -21,7 +21,6 @@ namespace MoarDT.CRDT.StateCRDT
     public class GSet<T> : AbstractCRDT
     {
         internal HashSet<T> Payload = new HashSet<T>();
-        public string Actor { get; private set; }
 
         public GSet(string actor = null, HashSet<T> contents = null)
         {
@@ -29,6 +28,14 @@ namespace MoarDT.CRDT.StateCRDT
 
             if (contents != null)
                 Payload = contents;
+        }
+
+        public HashSet<T> Value
+        {
+            get 
+            {
+                return Payload;
+            }
         }
 
         public GSet<T> Add(T value)
@@ -77,7 +84,12 @@ namespace MoarDT.CRDT.StateCRDT
 
         public override int GetHashCode()
         {
-            return Payload.GetHashCode();
+            unchecked
+            {
+                var result = Payload.GetHashCode();
+                result = (result * 397) ^ Actor.GetHashCode();
+                return result;
+            }
         }
     }
 }

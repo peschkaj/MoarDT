@@ -24,7 +24,6 @@ namespace MoarDT.CRDT.StateCRDT
     public class GCounter : AbstractCRDT
     {
         internal Dictionary<string, BigInteger> Payload { get; set; }
-        public string Actor { get; private set; }
 
         public GCounter(string actor = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
         {
@@ -64,7 +63,9 @@ namespace MoarDT.CRDT.StateCRDT
         {
             unchecked
             {
-                return Payload.GetHashCode();
+                var result = Payload.GetHashCode();
+                result = (result * 397) ^ Actor.GetHashCode();
+                return result;
             }
         }
 
