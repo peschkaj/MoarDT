@@ -28,7 +28,7 @@ namespace MoarDT.CRDT.StateCRDT
 
         public GCounter(string actor = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
         {
-            Actor = actor ?? DefaultClientId();
+            Actor = actor ?? DefaultActorId();
 
             if (currentValue != default(ulong))
                 Payload.Add(Actor, currentValue);
@@ -112,7 +112,7 @@ namespace MoarDT.CRDT.StateCRDT
                     newContents[key] = gca.Payload[key] > gcb.Payload[key] ? gca.Payload[key] : gcb.Payload[key];
             }
 
-            return new GCounter(clientId ?? DefaultClientId(), 
+            return new GCounter(clientId ?? DefaultActorId(), 
                                 counterContents: newContents);
         }
     }

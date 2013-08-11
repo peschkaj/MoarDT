@@ -17,7 +17,7 @@ namespace MoarDT.CRDT
 {
     public abstract class AbstractCRDT
     {
-        internal static string DefaultClientId()
+        internal static string DefaultActorId()
         {
             return System.Net.Dns.GetHostName();
         }

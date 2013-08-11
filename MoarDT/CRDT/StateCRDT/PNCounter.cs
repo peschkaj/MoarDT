@@ -37,7 +37,7 @@ namespace MoarDT.CRDT.StateCRDT
                           Dictionary<string, BigInteger> p = null, 
                           Dictionary<string, BigInteger> n = null)
         {
-            _actor = String.IsNullOrEmpty(actor) ? DefaultClientId() : actor;
+            _actor = String.IsNullOrEmpty(actor) ? DefaultActorId() : actor;
             P = new GCounter(_actor, counterContents: p);
             N = new GCounter(_actor, counterContents: n);
         }
@@ -76,10 +76,10 @@ namespace MoarDT.CRDT.StateCRDT
 
         public static PNCounter Merge(PNCounter pna, PNCounter pnb, string clientId = null)
         {
-            return new PNCounter(clientId ?? DefaultClientId())
+            return new PNCounter(clientId ?? DefaultActorId())
                 {
-                    P = GCounter.Merge(pna.P, pnb.P, clientId ?? DefaultClientId()),
-                    N = GCounter.Merge(pna.N, pnb.N, clientId ?? DefaultClientId())
+                    P = GCounter.Merge(pna.P, pnb.P, clientId ?? DefaultActorId()),
+                    N = GCounter.Merge(pna.N, pnb.N, clientId ?? DefaultActorId())
                 };
         }
 
