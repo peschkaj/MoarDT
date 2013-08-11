@@ -40,6 +40,8 @@
     <Compile Include="CRDT\StateCRDT\PNCounter.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Collections\MultiValueDictionary.cs" />
+    <Compile Include="CRDT\StateCRDT\GSet.cs" />
+    <Compile Include="CRDT\StateCRDT\TwoPhaseSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

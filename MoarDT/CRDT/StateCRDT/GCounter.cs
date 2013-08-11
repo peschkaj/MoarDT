@@ -24,14 +24,14 @@ namespace MoarDT.CRDT.StateCRDT
     public class GCounter : AbstractCRDT
     {
         internal Dictionary<string, BigInteger> Payload { get; set; }
-        private readonly string _actor;
+        public string Actor { get; private set; }
 
         public GCounter(string actor = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
         {
-            _actor = actor ?? DefaultClientId();
+            Actor = actor ?? DefaultClientId();
 
             if (currentValue != default(ulong))
-                Payload.Add(_actor, currentValue);
+                Payload.Add(Actor, currentValue);
 
             Payload = counterContents ?? new Dictionary<string, BigInteger>();
         }
@@ -51,7 +51,7 @@ namespace MoarDT.CRDT.StateCRDT
 
         public GCounter Increment(int value = 1)
         {
-            return Increment(_actor, value);
+            return Increment(Actor, value);
         }
 
         public GCounter Increment(string actor, int value = 1)
