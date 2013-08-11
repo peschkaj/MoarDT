@@ -46,5 +46,33 @@ namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
             pnc.Value.ShouldBeLessThan(0);
             pnc.Value.ShouldEqual(-1);
         }
+
+        [Test]
+        public void SingleActorMergeTests()
+        {
+            var pna = new PNCounter();
+            var pnb = new PNCounter();
+
+            pna.Increment(5);
+            pnb++;
+
+            var pnc = PNCounter.Merge(pna, pnb);
+
+            pnc.Value.ShouldEqual(5);
+        }
+
+        [Test]
+        public void MultiActorMergeTests()
+        {
+            var pna = new PNCounter("a");
+            var pnb = new PNCounter("b");
+
+            pna.Increment(5);
+            pnb++;
+
+            var pnc = PNCounter.Merge(pna, pnb);
+
+            pnc.Value.ShouldEqual(6);
+        }
     }
 }

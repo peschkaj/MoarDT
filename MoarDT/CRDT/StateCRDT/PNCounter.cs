@@ -23,7 +23,7 @@ namespace MoarDT.CRDT.StateCRDT
     {
         internal GCounter P;
         internal GCounter N;
-        private readonly string _clientId;
+        private readonly string _actor;
 
         public BigInteger Value 
         {
@@ -33,13 +33,13 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
 
-        public PNCounter (string clientId = null,
+        public PNCounter (string actor = null,
                           Dictionary<string, BigInteger> p = null, 
                           Dictionary<string, BigInteger> n = null)
         {
-            _clientId = String.IsNullOrEmpty(clientId) ? DefaultClientId() : clientId;
-            P = new GCounter(_clientId, counterContents: p);
-            N = new GCounter(_clientId, counterContents: n);
+            _actor = String.IsNullOrEmpty(actor) ? DefaultClientId() : actor;
+            P = new GCounter(_actor, counterContents: p);
+            N = new GCounter(_actor, counterContents: n);
         }
 
         public static PNCounter operator ++(PNCounter pnc)
@@ -49,7 +49,12 @@ namespace MoarDT.CRDT.StateCRDT
 
         public PNCounter Increment(int value = 1)
         {
-            P.Increment(value);
+            return Increment(_actor, value);
+        }
+
+        public PNCounter Increment(string actor, int value = 1)
+        {
+            P.Increment(actor, value);
             return this;
         }
 
@@ -60,7 +65,12 @@ namespace MoarDT.CRDT.StateCRDT
 
         public PNCounter Decrement(int value = 1)
         {
-            N.Increment(value);
+            return Decrement(_actor, value);
+        }
+
+        public PNCounter Decrement(string actor, int value = 1)
+        {
+            N.Increment(actor, value);
             return this;
         }
 

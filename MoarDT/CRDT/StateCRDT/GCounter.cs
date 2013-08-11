@@ -24,14 +24,14 @@ namespace MoarDT.CRDT.StateCRDT
     public class GCounter : AbstractCRDT
     {
         internal Dictionary<string, BigInteger> Payload { get; set; }
-        private readonly string _clientId;
+        private readonly string _actor;
 
-        public GCounter(string clientId = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
+        public GCounter(string actor = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
         {
-            _clientId = clientId ?? DefaultClientId();
+            _actor = actor ?? DefaultClientId();
 
             if (currentValue != default(ulong))
-                Payload.Add(_clientId, currentValue);
+                Payload.Add(_actor, currentValue);
 
             Payload = counterContents ?? new Dictionary<string, BigInteger>();
         }
@@ -49,9 +49,14 @@ namespace MoarDT.CRDT.StateCRDT
             return gc.Increment();
         }
 
-        public GCounter Increment(int item = 1)
+        public GCounter Increment(int value = 1)
         {
-            Payload[_clientId] = Payload.ValueOrDefault(_clientId) + item;
+            return Increment(_actor, value);
+        }
+
+        public GCounter Increment(string actor, int value = 1)
+        {
+            Payload[actor] = Payload.ValueOrDefault(actor) + value;
             return this;
         }
 
@@ -91,7 +96,7 @@ namespace MoarDT.CRDT.StateCRDT
                    && Payload.Equals(other.Payload);
         }
 
-        public static GCounter Merge(GCounter gca, GCounter gcb, string clientId = null)
+        public static GCounter Merge(GCounter gca, GCounter gcb, string clientId = null, bool partialOrder = false)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
