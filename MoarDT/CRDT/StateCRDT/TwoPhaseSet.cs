@@ -30,12 +30,12 @@ namespace MoarDT.CRDT.StateCRDT
             removeSet = new GSet<T>(actor, removals ?? new HashSet<T>());
         }
 
-        public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> tpsa, TwoPhaseSet<T> tpsb, string actor = null)
+        public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> left, TwoPhaseSet<T> right, string actor = null)
         {
             return new TwoPhaseSet<T>(actor)
             {
-                addSet = GSet<T>.Merge(tpsa.addSet, tpsb.addSet),
-                removeSet = GSet<T>.Merge(tpsb.removeSet, tpsb.removeSet)
+                addSet = GSet<T>.Merge(left.addSet, right.addSet),
+                removeSet = GSet<T>.Merge(right.removeSet, right.removeSet)
             };
         }
 
