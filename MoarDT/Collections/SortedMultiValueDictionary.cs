@@ -15,9 +15,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace MoarDT.Collections
+namespace MoarDT
 {
-    public class MultiValueDictionary<Key, Value> : Dictionary<Key, List<Value>> 
+    public class SortedMultiValueDictionary<Key, Value> : Dictionary<Key, List<Value>>
     {
         public void Add(Key key, Value value) 
         {

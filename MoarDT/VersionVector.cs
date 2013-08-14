@@ -13,6 +13,9 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 using System;
+using System.Linq;
+using System.Collections.Generic;
+using MoarDT.Extensions;
 
 namespace MoarDT
 {
@@ -20,8 +23,65 @@ namespace MoarDT
 
     public class VersionVector
     {
-        public VersionVector ()
+        // vclock node, counter
+        private SortedDictionary<string, int> _entries;
+
+        public VersionVector (SortedDictionary<string, int> VclockEntries = null)
         {
+            _entries = VclockEntries ?? new SortedDictionary<string, int>();
+        }
+
+        public SortedDictionary<string,int> ActiveNodes {
+            get { return _entries; }
+        }
+
+        public int Counter(string node)
+        {
+            return _entries.ValueOrDefault(node);
+        }
+
+        public VersionVector IncrementCounter(string node)
+        {
+            _entries[node] = _entries.ValueOrDefault(node) + 1;
+            return this;
+        }
+
+        public bool DescendedFrom(VersionVector other)
+        {
+            if (Equals(other))
+                return true;
+
+            throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            return _entries.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            return obj is VersionVector && Equals((VersionVector)obj);
+        }
+
+        public bool Equals(VersionVector other)
+        {
+            return ActiveNodes.Equals(other.ActiveNodes);
+        }
+
+        /// <summary>
+        /// Combine all vclocks in the current VersionVector into their
+        /// least possible descendant and return a new VersionVector.
+        /// </summary>
+        public VersionVector Merge()
+        {
+            throw new NotImplementedException();
         }
     }
 }
