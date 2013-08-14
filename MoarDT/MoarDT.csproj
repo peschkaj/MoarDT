@@ -42,6 +42,9 @@
     <Compile Include="Collections\MultiValueDictionary.cs" />
     <Compile Include="CRDT\StateCRDT\GSet.cs" />
     <Compile Include="CRDT\StateCRDT\TwoPhaseSet.cs" />
+    <Compile Include="CRDT\StateCRDT\ORSet.cs" />
+    <Compile Include="VersionVector.cs" />
+    <Compile Include="CRDT\StateCRDT\VVORSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

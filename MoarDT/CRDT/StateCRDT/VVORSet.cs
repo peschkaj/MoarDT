@@ -14,10 +14,12 @@
 //    limitations under the License.
 using System;
 
-namespace MoarDT
+namespace MoarDT.CRDT.StateCRDT
 {
     public class VVORSet
     {
+
+
         public VVORSet ()
         {
         }

@@ -13,13 +13,55 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using MoarDT.Collections;
 
-namespace MoarDT
+namespace MoarDT.CRDT.StateCRDT
 {
-    public class ORSet
+    public class ORSet<T> : AbstractCRDT
     {
-        public ORSet ()
+        internal MultiValueDictionary<T, string> addSet;
+        internal MultiValueDictionary<T, string> removeSet;
+
+        public ORSet (string actor = null, 
+                      MultiValueDictionary<T, string> additions = null, 
+                      MultiValueDictionary<T, string> removals = null)
         {
+            Actor = actor ?? DefaultActorId();
+            addSet = additions ?? new MultiValueDictionary<T, string>();
+            removeSet = removals ?? new MultiValueDictionary<T, string>();
+        }
+
+        public ORSet<T> Add(T element)
+        {
+            addSet.Add(element, Actor);
+            return this;
+        }
+
+        public ORSet<T> Remove(T element)
+        {
+            removeSet.Add(element, Actor);
+            return this;
+        }
+
+        public ORSet<T> Clear()
+        {
+            var keys = addSet.Keys;
+
+            foreach (var k in keys)
+            {
+                removeSet.Add(k, addSet[k]);
+            }
+
+            return this;
+        }
+
+        public static ORSet<T> Merge(ORSet<T> left, ORSet<T> right, string actor = null)
+        {
+
+
+            throw new NotImplementedException();
         }
     }
 }
