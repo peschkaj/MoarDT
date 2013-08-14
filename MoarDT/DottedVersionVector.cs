@@ -21,12 +21,12 @@ namespace MoarDT
 {
 
 
-    public class VersionVector
+    public class DottedVersionVector
     {
         // vclock node, counter
         private SortedDictionary<string, int> _entries;
 
-        public VersionVector (SortedDictionary<string, int> VclockEntries = null)
+        public DottedVersionVector (SortedDictionary<string, int> VclockEntries = null)
         {
             _entries = VclockEntries ?? new SortedDictionary<string, int>();
         }
@@ -40,13 +40,13 @@ namespace MoarDT
             return _entries.ValueOrDefault(node);
         }
 
-        public VersionVector IncrementCounter(string node)
+        public DottedVersionVector IncrementCounter(string node)
         {
             _entries[node] = _entries.ValueOrDefault(node) + 1;
             return this;
         }
 
-        public bool DescendedFrom(VersionVector other)
+        public bool DescendedFrom(DottedVersionVector other)
         {
             if (Equals(other))
                 return true;
@@ -67,10 +67,10 @@ namespace MoarDT
             if (ReferenceEquals(this, obj))
                 return true;
 
-            return obj is VersionVector && Equals((VersionVector)obj);
+            return obj is DottedVersionVector && Equals((DottedVersionVector)obj);
         }
 
-        public bool Equals(VersionVector other)
+        public bool Equals(DottedVersionVector other)
         {
             return ActiveNodes.Equals(other.ActiveNodes);
         }
@@ -79,7 +79,7 @@ namespace MoarDT
         /// Combine all vclocks in the current VersionVector into their
         /// least possible descendant and return a new VersionVector.
         /// </summary>
-        public VersionVector Merge()
+        public DottedVersionVector Merge()
         {
             throw new NotImplementedException();
         }
