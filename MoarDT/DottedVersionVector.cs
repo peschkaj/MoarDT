@@ -19,31 +19,62 @@ using MoarDT.Extensions;
 
 namespace MoarDT
 {
-
-
     public class DottedVersionVector
     {
-        // vclock node, counter
-        private SortedDictionary<string, int> _entries;
+        private SortedSet<VVPair> _versionVector;
+        public VVPair Dot { get; private set; }
+        public string Actor { get; private set; }
 
-        public DottedVersionVector (SortedDictionary<string, int> VclockEntries = null)
+        public DottedVersionVector (string actor, VVPair dot = null, SortedSet<VVPair> VclockEntries = null)
         {
-            _entries = VclockEntries ?? new SortedDictionary<string, int>();
+            Actor = actor;
+            Dot = dot ?? new VVPair(actor, 0UL);
+            _versionVector = VclockEntries ?? new SortedSet<VVPair>();
         }
 
-        public SortedDictionary<string,int> ActiveNodes {
-            get { return _entries; }
+        public ulong Counter()
+        {
+            return Counter(Actor);
         }
 
-        public int Counter(string node)
+        public ulong Counter(string actor)
         {
-            return _entries.ValueOrDefault(node);
+            // muck through SortedSet and find the max value for the current actor
+            var vvList = _versionVector.Where(pair => pair.Actor == actor);
+            return vvList.Max().Counter;
         }
 
-        public DottedVersionVector IncrementCounter(string node)
+
+
+        public static DottedVersionVector operator ++(DottedVersionVector vector)
         {
-            _entries[node] = _entries.ValueOrDefault(node) + 1;
+            return vector.Increment();
+        }
+
+        public DottedVersionVector Increment()
+        {
+            return Increment(Actor);
+        }
+
+        public DottedVersionVector Increment(string actor)
+        {
+            if (Dot != null)
+                _versionVector.Add(Dot);
+
+            var vv = new VVPair(actor, Counter(actor) + 1);
+            Dot = vv;
+
             return this;
+        }
+
+        private SortedSet<VVPair> Ancestors(VVPair vv)
+        {
+            var vvList = _versionVector.Where(pair => pair.Actor == vv.Actor);
+
+            if (vvList == null || vvList.Count() == 0)
+                return new SortedSet<VVPair>();
+
+            return new SortedSet<VVPair>(vvList);
         }
 
         public bool DescendedFrom(DottedVersionVector other)
@@ -51,12 +82,14 @@ namespace MoarDT
             if (Equals(other))
                 return true;
 
+
+
             throw new NotImplementedException();
         }
 
         public override int GetHashCode()
         {
-            return _entries.GetHashCode();
+            return _versionVector.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -72,7 +105,12 @@ namespace MoarDT
 
         public bool Equals(DottedVersionVector other)
         {
-            return ActiveNodes.Equals(other.ActiveNodes);
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return Dot == other.Dot && _versionVector.Equals(other._versionVector);
         }
 
         /// <summary>
@@ -81,6 +119,26 @@ namespace MoarDT
         /// </summary>
         public DottedVersionVector Merge()
         {
+            throw new NotImplementedException();
+        }
+
+        public static DottedVersionVector Update(DottedVersionVector dvv, VVPair vv)
+        {
+            var newDvv = new DottedVersionVector(dvv.Actor);
+            // find any ancestors of vv
+            var ancestors = dvv.Ancestors(vv);
+
+
+            if (ancestors.Count > 0)
+            {
+                // if there are ancestors, promote vv to Dot
+                newDvv.Dot = vv;
+
+                // prune ancestors
+                newDvv._versionVector = dvv.Merge()._versionVector;
+            }
+            // otherwise, add vv to _versionVector
+
             throw new NotImplementedException();
         }
     }
