@@ -49,7 +49,7 @@ namespace MoarDT
             }
             else
             {
-                throw new ArgumentException("obj is not a Dot");
+                throw new ArgumentException("obj is not a VVPair");
             }
         }
 
