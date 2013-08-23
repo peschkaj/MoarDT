@@ -45,8 +45,9 @@
     <Compile Include="CRDT\StateCRDT\ORSet.cs" />
     <Compile Include="CRDT\StateCRDT\VVORSet.cs" />
     <Compile Include="Collections\SortedMultiValueDictionary.cs" />
-    <Compile Include="DottedVersionVector.cs" />
     <Compile Include="VVPair.cs" />
+    <Compile Include="DVVSet.cs" />
+    <Compile Include="DVVPair.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

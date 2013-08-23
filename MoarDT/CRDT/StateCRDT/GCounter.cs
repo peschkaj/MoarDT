@@ -23,9 +23,12 @@ namespace MoarDT.CRDT.StateCRDT
 {
     public class GCounter : AbstractCRDT
     {
+        public DVVPair Version { get; private set; }
         internal Dictionary<string, BigInteger> Payload { get; set; }
 
-        public GCounter(string actor = null, ulong currentValue = default(ulong), Dictionary<string, BigInteger> counterContents = null)
+        public GCounter(string actor = null, ulong currentValue = default(ulong), 
+                        Dictionary<string, BigInteger> counterContents = null,
+                        DVVPair version = null)
         {
             Actor = actor ?? DefaultActorId();
 
@@ -33,6 +36,8 @@ namespace MoarDT.CRDT.StateCRDT
                 Payload.Add(Actor, currentValue);
 
             Payload = counterContents ?? new Dictionary<string, BigInteger>();
+
+            Version = version ?? new DVVPair(Actor, 0);
         }
 
         public BigInteger Value 

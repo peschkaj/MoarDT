@@ -16,6 +16,7 @@ using System;
 
 namespace MoarDT
 {
+    // dvvsets need to include the sibling
     public class VVPair : IComparable
     {
         public string Actor { get; private set; }
