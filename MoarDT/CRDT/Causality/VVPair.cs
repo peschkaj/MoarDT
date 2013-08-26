@@ -14,7 +14,7 @@
 //    limitations under the License.
 using System;
 
-namespace MoarDT
+namespace MoarDT.CRDT.Causality
 {
     // dvvsets need to include the sibling
     public class VVPair : IComparable
@@ -22,16 +22,20 @@ namespace MoarDT
         public int Actor { get; private set; }
         public ulong Counter { get; private set; }
 
+        public VVPair Clone() 
+        {
+            return new VVPair(Actor, Counter);
+        }
+
         public VVPair(int actor, ulong counter)
         {
             Actor = actor;
             Counter = counter;
         }
 
-        public static VVPair operator ++(VVPair obj)
+        public VVPair Increment()
         {
-            obj.Counter++;
-            return obj;
+            return new VVPair(Actor, Counter + 1);
         }
 
         public int CompareTo(object obj)
@@ -83,6 +87,15 @@ namespace MoarDT
                 return true;
 
             return Actor == other.Actor && Counter == other.Counter;
+        }
+
+        public static int DefaultActorId()
+        {
+            var actor = System.Net.Dns.GetHostName().GetHashCode().GetHashCode();
+            actor = (actor * 397) ^ System.Diagnostics.Process.GetCurrentProcess().Id;
+            actor = (actor * 397) ^ System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            return actor;
         }
     }
 }
