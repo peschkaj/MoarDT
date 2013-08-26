@@ -32,7 +32,7 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
 
-        public PNCounter (string actor = null,
+        public PNCounter (int? actor = null,
                           Dictionary<string, BigInteger> p = null, 
                           Dictionary<string, BigInteger> n = null)
         {

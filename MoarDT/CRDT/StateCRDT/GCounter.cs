@@ -24,20 +24,21 @@ namespace MoarDT.CRDT.StateCRDT
     public class GCounter : AbstractCRDT
     {
         public DVVPair Version { get; private set; }
-        internal Dictionary<string, BigInteger> Payload { get; set; }
+        internal Dictionary<DVVPair, BigInteger> Payload { get; set; }
 
-        public GCounter(string actor = null, ulong currentValue = default(ulong), 
-                        Dictionary<string, BigInteger> counterContents = null,
+        public GCounter(DVVPair dvv = null, ulong currentValue = default(ulong), 
+                        Dictionary<DVVPair, BigInteger> counterContents = null,
                         DVVPair version = null)
         {
-            Actor = actor ?? DefaultActorId();
+            Version = dvv ?? new DVVPair(DefaultActorId(), 0);
+            Actor = Version.Actor;
 
             if (currentValue != default(ulong))
-                Payload.Add(Actor, currentValue);
+                Payload.Add(dvv, currentValue);
 
-            Payload = counterContents ?? new Dictionary<string, BigInteger>();
+            Payload = counterContents ?? new Dictionary<DVVPair, BigInteger>();
 
-            Version = version ?? new DVVPair(Actor, 0);
+//            Version = version ?? new DVVPair(Actor, 0);
         }
 
         public BigInteger Value 
@@ -55,10 +56,10 @@ namespace MoarDT.CRDT.StateCRDT
 
         public GCounter Increment(int value = 1)
         {
-            return Increment(Actor, value);
+            return Increment(Version, value);
         }
 
-        public GCounter Increment(string actor, int value = 1)
+        public GCounter Increment(DVVPair actor, int value = 1)
         {
             Payload[actor] = Payload.ValueOrDefault(actor) + value;
             return this;
@@ -102,11 +103,11 @@ namespace MoarDT.CRDT.StateCRDT
                    && Payload.Equals(other.Payload);
         }
 
-        public static GCounter Merge(GCounter gca, GCounter gcb, string clientId = null, bool partialOrder = false)
+        public static GCounter Merge(GCounter gca, GCounter gcb, DVVPair version = null, bool partialOrder = false)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
-            var newContents = new Dictionary<string, BigInteger>();
+            var newContents = new Dictionary<DVVPair, BigInteger>();
 
             foreach (var key in keys)
             {
@@ -118,8 +119,12 @@ namespace MoarDT.CRDT.StateCRDT
                     newContents[key] = gca.Payload[key] > gcb.Payload[key] ? gca.Payload[key] : gcb.Payload[key];
             }
 
-            return new GCounter(clientId ?? DefaultActorId(), 
+            // TODO: Need to get the largest version from gca or gcb and increment by one
+            return new GCounter(version ?? new DVVPair(DefaultActorId(), 0),
                                 counterContents: newContents);
+
+//            return new GCounter(clientId ?? DefaultActorId(), 
+//                                counterContents: newContents);
         }
     }
 }

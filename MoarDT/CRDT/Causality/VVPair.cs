@@ -19,10 +19,10 @@ namespace MoarDT
     // dvvsets need to include the sibling
     public class VVPair : IComparable
     {
-        public string Actor { get; private set; }
+        public int Actor { get; private set; }
         public ulong Counter { get; private set; }
 
-        public VVPair(string actor, ulong counter)
+        public VVPair(int actor, ulong counter)
         {
             Actor = actor;
             Counter = counter;

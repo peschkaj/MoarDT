@@ -45,13 +45,13 @@
     <Compile Include="CRDT\StateCRDT\ORSet.cs" />
     <Compile Include="CRDT\StateCRDT\VVORSet.cs" />
     <Compile Include="Collections\SortedMultiValueDictionary.cs" />
-    <Compile Include="VVPair.cs" />
-    <Compile Include="DVVSet.cs" />
-    <Compile Include="DVVPair.cs" />
+    <Compile Include="CRDT\Causality\DVVSet.cs" />
+    <Compile Include="CRDT\Causality\VVPair.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup>
     <Folder Include="Collections\" />
+    <Folder Include="CRDT\Causality\" />
   </ItemGroup>
 </Project>

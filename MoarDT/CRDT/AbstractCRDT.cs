@@ -17,11 +17,14 @@ namespace MoarDT.CRDT
 {
     public abstract class AbstractCRDT
     {
-        public string Actor { get; protected set; }
+        public int Actor { get; protected set; }
 
-        internal static string DefaultActorId()
+        internal static int DefaultActorId()
         {
-            return System.Net.Dns.GetHostName();
+            var actor = System.Net.Dns.GetHostName().GetHashCode();
+            actor = (actor * 397) ^ System.Diagnostics.Process.GetCurrentProcess().Id;
+            actor = (actor * 397) ^ System.Threading.Thread.CurrentThread.ManagedThreadId;
+            return actor;
         }
     }
 }
