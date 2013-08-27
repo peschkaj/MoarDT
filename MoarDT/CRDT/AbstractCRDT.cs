@@ -12,18 +12,22 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
+using System.Collections.Generic;
+using System.Text;
+using MoarDT.Extensions;
 
 namespace MoarDT.CRDT
 {
     public abstract class AbstractCRDT
     {
-        public int Actor { get; protected set; }
+        public string Actor { get; protected set; }
 
-        internal static int DefaultActorId()
+        internal static string DefaultActorId()
         {
-            var actor = System.Net.Dns.GetHostName().GetHashCode();
-            actor = (actor * 397) ^ System.Diagnostics.Process.GetCurrentProcess().Id;
-            actor = (actor * 397) ^ System.Threading.Thread.CurrentThread.ManagedThreadId;
+            var actor = string.Format("{0}:{1}:{2}",
+                                      System.Net.Dns.GetHostName(),
+                                      System.Diagnostics.Process.GetCurrentProcess().Id,
+                                      System.Threading.Thread.CurrentThread.ManagedThreadId);
             return actor;
         }
     }
