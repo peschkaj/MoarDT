@@ -64,7 +64,7 @@ namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
         [Test]
         public void MultiActorMergeTests()
         {
-            var pna = new PNCounter("a");
+            var pna = new PNCounter();
             var pnb = new PNCounter("b");
 
             pna.Increment(5);
