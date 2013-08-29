@@ -20,8 +20,6 @@ using MoarDT.Extensions;
 
 namespace MoarDT.CRDT.Causality
 {
-
-
     public class VectorClock : IEquatable<VectorClock>, IComparable, IComparable<VectorClock>, IComparer<VectorClock>
     {
         private enum Occurs
@@ -219,8 +217,6 @@ namespace MoarDT.CRDT.Causality
                 else
                     return (int)Occurs.Concurrently;
             }
-
-            throw new NotImplementedException();
         }
 
         public override string ToString()
