@@ -25,7 +25,8 @@ namespace MoarDT.CRDT.StateCRDT
 
         public TwoPhaseSet (string actor = null, HashSet<T> additions = null, HashSet<T> removals = null)
         {
-            Actor = actor ?? DefaultActorId();
+//            Actor = actor ?? DefaultActorId();
+            throw new NotImplementedException();
             addSet = new GSet<T>(actor, additions ?? new HashSet<T>());
             removeSet = new GSet<T>(actor, removals ?? new HashSet<T>());
         }

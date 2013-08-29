@@ -45,8 +45,12 @@
     <Compile Include="CRDT\StateCRDT\ORSet.cs" />
     <Compile Include="CRDT\StateCRDT\VVORSet.cs" />
     <Compile Include="Collections\SortedMultiValueDictionary.cs" />
-    <Compile Include="CRDT\Causality\DVVSet.cs" />
     <Compile Include="CRDT\Causality\VVPair.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\BigIntegerExtensions.cs" />
+    <Compile Include="Extensions\IntegerExtensions.cs" />
+    <Compile Include="CRDT\Causality\VectorClock.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

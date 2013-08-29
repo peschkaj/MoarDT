@@ -24,7 +24,8 @@ namespace MoarDT.CRDT.StateCRDT
 
         public GSet(string actor = null, HashSet<T> contents = null)
         {
-            Actor = actor ?? DefaultActorId();
+//            Actor = actor ?? DefaultActorId();
+            throw new NotImplementedException();
 
             if (contents != null)
                 Payload = contents;
@@ -78,8 +79,9 @@ namespace MoarDT.CRDT.StateCRDT
 
         public static GSet<T> Merge(GSet<T> gsa, GSet<T> gsb, string actor = null)
         {
-            return new GSet<T>(actor ?? DefaultActorId(),
-                               new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
+//            return new GSet<T>(actor ?? DefaultActorId(),
+//                               new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
+            throw new NotImplementedException();
         }
 
         public override int GetHashCode()
