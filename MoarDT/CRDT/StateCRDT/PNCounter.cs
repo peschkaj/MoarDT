@@ -16,6 +16,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using System.Collections.Generic;
+using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
@@ -32,11 +33,20 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
 
-        public PNCounter (int? actor = null,
-                          Dictionary<string, BigInteger> p = null, 
-                          Dictionary<string, BigInteger> n = null)
+        public PNCounter(string actor, BigInteger value)
         {
             Actor = actor ?? DefaultActorId();
+
+            P = new GCounter(Actor, value.PositiveOrDefault());
+            N = new GCounter(Actor, value.NegativeOrDefault());
+        }
+
+        public PNCounter(string actor = null,
+                         Dictionary<string, BigInteger> p = null, 
+                         Dictionary<string, BigInteger> n = null)
+        {
+            Actor = actor ?? DefaultActorId();
+
             P = new GCounter(Actor, counterContents: p);
             N = new GCounter(Actor, counterContents: n);
         }
@@ -111,6 +121,11 @@ namespace MoarDT.CRDT.StateCRDT
                 result = (result * 397) ^ Actor.GetHashCode();
                 return result;
             }
+        }
+
+        public static PNCounter Prune(PNCounter pnc, string actor = null)
+        {
+            return new PNCounter(actor ?? DefaultActorId(), pnc.Value);
         }
     }
 }
