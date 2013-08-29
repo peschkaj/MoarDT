@@ -13,11 +13,12 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 using System;
+using System.Collections.Generic;
 
 namespace MoarDT.CRDT.Causality
 {
     // dvvsets need to include the sibling
-    public class VVPair : IComparable
+    public class VVPair : IComparable, IComparable<VVPair>, IEquatable<VVPair>
     {
         public int Actor { get; private set; }
         public ulong Counter { get; private set; }
@@ -27,10 +28,15 @@ namespace MoarDT.CRDT.Causality
             return new VVPair(Actor, Counter);
         }
 
-        public VVPair(int actor, ulong counter)
+        public VVPair(int actor, ulong counter = 1)
         {
             Actor = actor;
             Counter = counter;
+        }
+
+        public static VVPair operator ++(VVPair vvpair)
+        {
+            return vvpair.Increment();
         }
 
         public VVPair Increment()
@@ -43,19 +49,18 @@ namespace MoarDT.CRDT.Causality
             if (obj == null) 
                 return 1;
 
-            var dot = obj as VVPair;
-
-            if (dot != null)
-            {
-                if (Actor == dot.Actor)
-                    return Counter.CompareTo(dot.Counter);
-                else
-                    return Actor.CompareTo(dot.Actor);
-            }
+            if (obj is VVPair)
+                return CompareTo((VVPair)obj);
             else
-            {
                 throw new ArgumentException("obj is not a VVPair");
-            }
+        }
+
+        public int CompareTo(VVPair other)
+        {
+            if (Actor == other.Actor)
+                return Counter.CompareTo(other.Counter);
+            else
+                return Actor.CompareTo(Actor);
         }
 
         public override int GetHashCode()
@@ -96,6 +101,11 @@ namespace MoarDT.CRDT.Causality
             actor = (actor * 397) ^ System.Threading.Thread.CurrentThread.ManagedThreadId;
 
             return actor;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[VVPair: Actor={0}, Counter={1}]", Actor, Counter);
         }
     }
 }
