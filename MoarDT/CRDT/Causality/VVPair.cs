@@ -17,7 +17,6 @@ using System.Collections.Generic;
 
 namespace MoarDT.CRDT.Causality
 {
-    // dvvsets need to include the sibling
     public class VVPair : IComparable, IComparable<VVPair>, IEquatable<VVPair>
     {
         public int Actor { get; private set; }
@@ -97,8 +96,6 @@ namespace MoarDT.CRDT.Causality
         public static int DefaultActorId()
         {
             var actor = System.Net.Dns.GetHostName().GetHashCode().GetHashCode();
-            actor = (actor * 397) ^ System.Diagnostics.Process.GetCurrentProcess().Id;
-            actor = (actor * 397) ^ System.Threading.Thread.CurrentThread.ManagedThreadId;
 
             return actor;
         }
