@@ -15,18 +15,19 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class TwoPhaseSet<T> : AbstractCRDT
+    public class TwoPhaseSet<T> : AbstractCRDT, IEquatable<TwoPhaseSet<T>>
     {
         internal GSet<T> addSet;
         internal GSet<T> removeSet;
 
         public TwoPhaseSet (string actor = null, HashSet<T> additions = null, HashSet<T> removals = null)
         {
-//            Actor = actor ?? DefaultActorId();
-            throw new NotImplementedException();
+            VectorClock = new VectorClock();
+            Actor = actor ?? DefaultActorId();
             addSet = new GSet<T>(actor, additions ?? new HashSet<T>());
             removeSet = new GSet<T>(actor, removals ?? new HashSet<T>());
         }
