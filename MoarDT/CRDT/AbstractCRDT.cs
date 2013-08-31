@@ -15,12 +15,14 @@
 using System.Collections.Generic;
 using System.Text;
 using MoarDT.Extensions;
+using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT
 {
     public abstract class AbstractCRDT
     {
         public string Actor { get; protected set; }
+        public VectorClock VectorClock { get; protected set; }
 
         internal static string DefaultActorId()
         {
