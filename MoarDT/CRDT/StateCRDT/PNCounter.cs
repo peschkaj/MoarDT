@@ -33,19 +33,25 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
 
-        public PNCounter(string actor, BigInteger value)
+        public PNCounter(BigInteger value) : this(DefaultActorId(), value) { }
+
+        public PNCounter(int actor, BigInteger value)
         {
-            Actor = actor ?? DefaultActorId();
+            Actor = actor;
 
             P = new GCounter(Actor, value.PositiveOrDefault());
             N = new GCounter(Actor, value.NegativeOrDefault());
         }
 
-        public PNCounter(string actor = null,
-                         Dictionary<string, BigInteger> p = null, 
-                         Dictionary<string, BigInteger> n = null)
+        public PNCounter(Dictionary<int, BigInteger> p = null, 
+                         Dictionary<int, BigInteger> n = null) :
+            this(DefaultActorId(), p, n) { }
+
+        public PNCounter(int actor,
+                         Dictionary<int, BigInteger> p = null, 
+                         Dictionary<int, BigInteger> n = null)
         {
-            Actor = actor ?? DefaultActorId();
+            Actor = actor;
 
             P = new GCounter(Actor, counterContents: p);
             N = new GCounter(Actor, counterContents: n);
@@ -61,7 +67,7 @@ namespace MoarDT.CRDT.StateCRDT
             return Increment(Actor, value);
         }
 
-        public PNCounter Increment(string actor, int value = 1)
+        public PNCounter Increment(int actor, int value = 1)
         {
             P.Increment(actor, value);
             return this;
@@ -77,18 +83,23 @@ namespace MoarDT.CRDT.StateCRDT
             return Decrement(Actor, value);
         }
 
-        public PNCounter Decrement(string actor, int value = 1)
+        public PNCounter Decrement(int actor, int value = 1)
         {
             N.Increment(actor, value);
             return this;
         }
 
-        public static PNCounter Merge(PNCounter pna, PNCounter pnb, string actor = null)
+        public static PNCounter Merge(PNCounter pna, PNCounter pnb)
         {
-            return new PNCounter(actor ?? DefaultActorId())
+            return Merge(pna, pnb, DefaultActorId());
+        }
+
+        public static PNCounter Merge(PNCounter pna, PNCounter pnb, int actor)
+        {
+            return new PNCounter(actor)
                 {
-                    P = GCounter.Merge(pna.P, pnb.P, actor ?? DefaultActorId()),
-                    N = GCounter.Merge(pna.N, pnb.N, actor ?? DefaultActorId())
+                    P = GCounter.Merge(pna.P, pnb.P, actor),
+                    N = GCounter.Merge(pna.N, pnb.N, actor)
                 };
         }
 
@@ -123,9 +134,14 @@ namespace MoarDT.CRDT.StateCRDT
             }
         }
 
-        public static PNCounter Prune(PNCounter pnc, string actor = null)
+        public static PNCounter Prune(PNCounter pnc)
         {
-            return new PNCounter(actor ?? DefaultActorId(), pnc.Value);
+            return Prune(pnc, DefaultActorId());
+        }
+
+        public static PNCounter Prune(PNCounter pnc, int actor)
+        {
+            return new PNCounter(actor, pnc.Value);
         }
     }
 }

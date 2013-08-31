@@ -24,15 +24,23 @@ namespace MoarDT.CRDT.StateCRDT
         internal GSet<T> addSet;
         internal GSet<T> removeSet;
 
-        public TwoPhaseSet (string actor = null, HashSet<T> additions = null, HashSet<T> removals = null)
+        public TwoPhaseSet(HashSet<T> additions = null, HashSet<T> removals = null)
+        : this(DefaultActorId(), additions, removals) { }
+
+        public TwoPhaseSet(int actor, HashSet<T> additions = null, HashSet<T> removals = null)
         {
             VectorClock = new VectorClock();
-            Actor = actor ?? DefaultActorId();
+            Actor = actor;
             addSet = new GSet<T>(additions ?? new HashSet<T>());
             removeSet = new GSet<T>(removals ?? new HashSet<T>());
         }
 
-        public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> left, TwoPhaseSet<T> right, string actor = null)
+        public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> left, TwoPhaseSet<T> right)
+        {
+            return Merge(left, right, DefaultActorId());
+        }
+
+        public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> left, TwoPhaseSet<T> right, int actor)
         {
             return new TwoPhaseSet<T>(actor)
             {

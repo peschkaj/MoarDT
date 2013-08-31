@@ -15,8 +15,9 @@
 
 using MoarDT.CRDT.StateCRDT;
 using NUnit.Framework;
+using MoarDT.Tests.Extensions;
 
-namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
+namespace MoarDT.Tests.CRDT.StateCRDT
 {
     [TestFixture()]
     public class GCounterTest
@@ -43,9 +44,9 @@ namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
         [Test]
         public void ValuesConverge()
         {
-            var gca = new GCounter("1");
-            var gcb = new GCounter("2");
-            var gcc = new GCounter("3");
+            var gca = new GCounter(1);
+            var gcb = new GCounter(2);
+            var gcc = new GCounter(3);
 
             gca++;
             gcb.Increment(10);

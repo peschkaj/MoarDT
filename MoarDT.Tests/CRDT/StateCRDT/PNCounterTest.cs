@@ -16,9 +16,9 @@
 
 using NUnit.Framework;
 using MoarDT.CRDT.StateCRDT;
-using MoarDT.Extensions;
+using MoarDT.Tests.Extensions;
 
-namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
+namespace MoarDT.Tests.CRDT.StateCRDT
 {
     [TestFixture]
     public class PNCounterTest
@@ -65,7 +65,7 @@ namespace MoarDT.Tests.Extensions.Extensions.CRDT.StateCRDT
         public void MultiActorMergeTests()
         {
             var pna = new PNCounter();
-            var pnb = new PNCounter("b");
+            var pnb = new PNCounter(1);
 
             pna.Increment(5);
             pnb++;

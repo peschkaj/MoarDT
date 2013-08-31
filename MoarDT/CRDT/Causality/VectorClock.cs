@@ -41,6 +41,11 @@ namespace MoarDT.CRDT.Causality
             _versions = versions ?? new List<VVPair>() { new VVPair(VVPair.DefaultActorId(), 0) };
         }
 
+        public void IncrementVersion(int actor)
+        {
+            IncrementVersion(actor, Environment.TickCount);
+        }
+
         public void IncrementVersion(int actor, long timestamp)
         {
             Timestamp = timestamp;
@@ -71,6 +76,11 @@ namespace MoarDT.CRDT.Causality
                 _versions.Add(new VVPair(actor, 1));
         }
 
+        public VectorClock Increment(int actor)
+        {
+            return Increment(actor, Environment.TickCount);
+        }
+
         public VectorClock Increment(int actor, long timestamp)
         {
             var vclock = this.Clone();
@@ -96,6 +106,9 @@ namespace MoarDT.CRDT.Causality
 
         public bool Equals(VectorClock other)
         {
+            if (ReferenceEquals(null, other))
+                return false;
+
             if (_versions.Count != other._versions.Count)
                 return false;
 

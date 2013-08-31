@@ -25,31 +25,33 @@ namespace MoarDT.CRDT.StateCRDT
     public class GCounter : AbstractCRDT, IEquatable<GCounter>
     {
         public VVPair Version { get; internal set; }
-        internal Dictionary<string, BigInteger> Payload { get; set; }
+        internal Dictionary<int, BigInteger> Payload { get; set; }
 
-        public GCounter()
-        {
-            Actor = DefaultActorId();
-            Payload = new Dictionary<string, BigInteger>();
-        }
+        public GCounter() : this(DefaultActorId(), new Dictionary<int, BigInteger>()) { }
 
-        public GCounter(string actor, 
-                        BigInteger currentValue = default(BigInteger))
+        public GCounter(int actor, 
+                        BigInteger currentValue = default(BigInteger),
+                        VectorClock vclock = null)
         {
             Actor = actor;
 
-            Payload = new Dictionary<string, BigInteger>();
+            Payload = new Dictionary<int, BigInteger>();
 
             if (currentValue != default(BigInteger))
                 Payload.Add(actor, currentValue);
+
+            VectorClock = vclock ?? new VectorClock();
         }
 
-        public GCounter(string actor, 
-                        Dictionary<string, BigInteger> counterContents)
+        public GCounter(int actor, 
+                        Dictionary<int, BigInteger> counterContents,
+                        VectorClock vclock = null)
         {
             Actor = actor;
 
-            Payload = counterContents ?? new Dictionary<string, BigInteger>();
+            Payload = counterContents ?? new Dictionary<int, BigInteger>();
+
+            VectorClock = vclock ?? new VectorClock();
         }
 
         public BigInteger Value 
@@ -70,7 +72,7 @@ namespace MoarDT.CRDT.StateCRDT
             return Increment(Actor, value);
         }
 
-        public GCounter Increment(string actor, int value = 1)
+        public GCounter Increment(int actor, int value = 1)
         {
             Payload[actor] = Payload.ValueOrDefault(actor) + value;
             return this;
@@ -114,11 +116,16 @@ namespace MoarDT.CRDT.StateCRDT
                    && Payload.Equals(other.Payload);
         }
 
-        public static GCounter Merge(GCounter gca, GCounter gcb, string actor = null)
+        public static GCounter Merge(GCounter gca, GCounter gcb)
+        {
+            return Merge(gca, gcb, DefaultActorId());
+        }
+
+        public static GCounter Merge(GCounter gca, GCounter gcb, int actor)
         {
             /* let ∀i ∈ [0,n − 1] : Z.P[i] = max(X.P[i],Y.P[i]) */
             var keys = gca.Payload.Keys.Union(gcb.Payload.Keys);
-            var newContents = new Dictionary<string, BigInteger>();
+            var newContents = new Dictionary<int, BigInteger>();
 
             foreach (var key in keys)
             {
@@ -132,18 +139,23 @@ namespace MoarDT.CRDT.StateCRDT
 
             // grab the largest vclock and increment
             var newClock = gca.VectorClock >= gcb.VectorClock ? gca.VectorClock : gcb.VectorClock;
-            newClock++;
+            newClock = newClock.Increment(actor);
 
-            return new GCounter(actor ?? DefaultActorId(),
+            return new GCounter(actor,
                                 counterContents: newContents)
             {
                 VectorClock = newClock
             };
         }
 
-        public static GCounter Prune(GCounter gc, string actor = null)
+        public static GCounter Prune(GCounter gc)
         {
-            return new GCounter(actor ?? DefaultActorId(), gc.Value);
+            return Prune(gc, DefaultActorId());
+        }
+
+        public static GCounter Prune(GCounter gc, int actor)
+        {
+            return new GCounter(actor, gc.Value);
         }
     }
 }

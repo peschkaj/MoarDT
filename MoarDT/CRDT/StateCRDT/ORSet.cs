@@ -23,17 +23,22 @@ namespace MoarDT.CRDT.StateCRDT
 {
     public class ORSet<T> : AbstractCRDT, IEquatable<ORSet<T>>
     {
-        internal MultiValueDictionary<T, string> addSet;
-        internal MultiValueDictionary<T, string> removeSet;
+        internal MultiValueDictionary<T, int> addSet;
+        internal MultiValueDictionary<T, int> removeSet;
 
-        public ORSet (string actor = null, 
-                      MultiValueDictionary<T, string> additions = null, 
-                      MultiValueDictionary<T, string> removals = null)
+        public ORSet (MultiValueDictionary<T, int> additions = null,
+                      MultiValueDictionary<T, int> removals = null)
+        : this(DefaultActorId(), additions, removals) { } 
+
+
+        public ORSet (int actor, 
+                      MultiValueDictionary<T, int> additions = null, 
+                      MultiValueDictionary<T, int> removals = null)
         {
             VectorClock = new VectorClock();
-            Actor = actor ?? DefaultActorId();
-            addSet = additions ?? new MultiValueDictionary<T, string>();
-            removeSet = removals ?? new MultiValueDictionary<T, string>();
+            Actor = actor;
+            addSet = additions ?? new MultiValueDictionary<T, int>();
+            removeSet = removals ?? new MultiValueDictionary<T, int>();
         }
 
         public ORSet<T> Add(T element)
