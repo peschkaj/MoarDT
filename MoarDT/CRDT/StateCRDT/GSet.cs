@@ -15,17 +15,18 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class GSet<T> : AbstractCRDT
+    public class GSet<T> : AbstractCRDT, IEquatable<GSet<T>>
     {
         internal HashSet<T> Payload = new HashSet<T>();
 
         public GSet(string actor = null, HashSet<T> contents = null)
         {
-//            Actor = actor ?? DefaultActorId();
-            throw new NotImplementedException();
+            VectorClock = new VectorClock();
+            Actor = actor ?? DefaultActorId();
 
             if (contents != null)
                 Payload = contents;
@@ -79,9 +80,8 @@ namespace MoarDT.CRDT.StateCRDT
 
         public static GSet<T> Merge(GSet<T> gsa, GSet<T> gsb, string actor = null)
         {
-//            return new GSet<T>(actor ?? DefaultActorId(),
-//                               new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
-            throw new NotImplementedException();
+            return new GSet<T>(actor ?? DefaultActorId(),
+                               new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
         }
 
         public override int GetHashCode()
