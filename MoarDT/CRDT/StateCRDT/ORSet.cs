@@ -15,11 +15,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MoarDT.Collections;
+using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class ORSet<T> : AbstractCRDT
+    public class ORSet<T> : AbstractCRDT, IEquatable<ORSet<T>>
     {
         internal MultiValueDictionary<T, string> addSet;
         internal MultiValueDictionary<T, string> removeSet;
@@ -28,6 +30,7 @@ namespace MoarDT.CRDT.StateCRDT
                       MultiValueDictionary<T, string> additions = null, 
                       MultiValueDictionary<T, string> removals = null)
         {
+            VectorClock = new VectorClock();
             Actor = actor ?? DefaultActorId();
             addSet = additions ?? new MultiValueDictionary<T, string>();
             removeSet = removals ?? new MultiValueDictionary<T, string>();
@@ -57,11 +60,48 @@ namespace MoarDT.CRDT.StateCRDT
             return this;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            return obj is ORSet<T> && Equals((ORSet<T>)obj);
+        }
+
+        public bool Equals(ORSet<T> other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return addSet == other.addSet 
+                   && removeSet == other.removeSet;
+        }
+
         public static ORSet<T> Merge(ORSet<T> left, ORSet<T> right, string actor = null)
         {
+            var orSet = new ORSet<T>();
 
+            Parallel.ForEach(left.addSet.Keys, k => orSet.Add(k));
+            Parallel.ForEach(right.addSet.Keys, k => orSet.Add(k));
+            Parallel.ForEach(left.removeSet.Keys, k => orSet.Remove(k));
+            Parallel.ForEach(right.removeSet.Keys, k => orSet.Remove(k));
 
-            throw new NotImplementedException();
+            return orSet;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked {
+                var result = addSet.GetHashCode();
+                result = (result * 397) ^ removeSet.GetHashCode();
+                return result;
+            }
         }
     }
 }
