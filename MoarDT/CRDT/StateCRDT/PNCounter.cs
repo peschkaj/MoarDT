@@ -20,7 +20,7 @@ using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class PNCounter : AbstractCRDT
+    public class PNCounter : AbstractCRDT, IEquatable<PNCounter>
     {
         internal GCounter P;
         internal GCounter N;
