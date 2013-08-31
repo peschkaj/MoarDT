@@ -23,10 +23,9 @@ namespace MoarDT.CRDT.StateCRDT
     {
         internal HashSet<T> Payload = new HashSet<T>();
 
-        public GSet(string actor = null, HashSet<T> contents = null)
+        public GSet(HashSet<T> contents = null)
         {
             VectorClock = new VectorClock();
-            Actor = actor ?? DefaultActorId();
 
             if (contents != null)
                 Payload = contents;
@@ -80,8 +79,7 @@ namespace MoarDT.CRDT.StateCRDT
 
         public static GSet<T> Merge(GSet<T> gsa, GSet<T> gsb, string actor = null)
         {
-            return new GSet<T>(actor ?? DefaultActorId(),
-                               new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
+            return new GSet<T>(new HashSet<T>(gsa.Payload.Union(gsb.Payload)));
         }
 
         public override int GetHashCode()
@@ -89,7 +87,7 @@ namespace MoarDT.CRDT.StateCRDT
             unchecked
             {
                 var result = Payload.GetHashCode();
-                result = (result * 397) ^ Actor.GetHashCode();
+                result = (result * 397) ^ VectorClock.GetHashCode();
                 return result;
             }
         }

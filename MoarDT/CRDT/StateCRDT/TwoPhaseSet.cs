@@ -28,8 +28,8 @@ namespace MoarDT.CRDT.StateCRDT
         {
             VectorClock = new VectorClock();
             Actor = actor ?? DefaultActorId();
-            addSet = new GSet<T>(actor, additions ?? new HashSet<T>());
-            removeSet = new GSet<T>(actor, removals ?? new HashSet<T>());
+            addSet = new GSet<T>(additions ?? new HashSet<T>());
+            removeSet = new GSet<T>(removals ?? new HashSet<T>());
         }
 
         public static TwoPhaseSet<T> Merge(TwoPhaseSet<T> left, TwoPhaseSet<T> right, string actor = null)

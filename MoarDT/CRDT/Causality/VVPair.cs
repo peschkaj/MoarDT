@@ -27,6 +27,8 @@ namespace MoarDT.CRDT.Causality
             return new VVPair(Actor, Counter);
         }
 
+        public VVPair() : this(DefaultActorId()) { }
+
         public VVPair(int actor, ulong counter = 1)
         {
             Actor = actor;
@@ -95,7 +97,7 @@ namespace MoarDT.CRDT.Causality
 
         public static int DefaultActorId()
         {
-            var actor = System.Net.Dns.GetHostName().GetHashCode().GetHashCode();
+            var actor = System.Net.Dns.GetHostName().GetHashCode();
 
             return actor;
         }
