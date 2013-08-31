@@ -20,7 +20,7 @@ using MoarDT.Extensions;
 
 namespace MoarDT.CRDT.Causality
 {
-    public class VectorClock : IEquatable<VectorClock>, IComparable, IComparable<VectorClock>, IComparer<VectorClock>
+    public class VectorClock : IComparable, IComparable<VectorClock>, IEquatable<VectorClock>
     {
         private enum Occurs
         {
@@ -108,8 +108,6 @@ namespace MoarDT.CRDT.Causality
             return Enumerable.SequenceEqual(_versions.OrderBy(t => t), other._versions.OrderBy(t => t));
         }
 
-
-
         public override int GetHashCode() {
             return _versions.GetHashCode();
         }
@@ -160,7 +158,7 @@ namespace MoarDT.CRDT.Causality
             return Compare(this, other);
         }
 
-        public int Compare(VectorClock left, VectorClock right)
+        public static int Compare(VectorClock left, VectorClock right)
         {
             if (left == null || right == null)
                 throw new ArgumentNullException("Can't compare null VectorClocks to real things!");
@@ -230,6 +228,36 @@ namespace MoarDT.CRDT.Causality
             sb.Append("]}");
 
             return sb.ToString();
+        }
+
+        public static bool operator <(VectorClock left, VectorClock right)
+        {
+            return Compare(left, right) < 0;
+        }
+
+        public static bool operator >(VectorClock left, VectorClock right)
+        {
+            return Compare(left, right) > 0;
+        }
+
+        public static bool operator ==(VectorClock left, VectorClock right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(VectorClock left, VectorClock right)
+        {
+            return Compare(left, right) != 0;
+        }
+
+        public static bool operator >=(VectorClock left, VectorClock right)
+        {
+            return Compare(left, right) >= 0;
+        }
+
+        public static bool operator <=(VectorClock left, VectorClock right)
+        {
+            return Compare(left, right) <= 0;
         }
     }
 }
