@@ -130,9 +130,15 @@ namespace MoarDT.CRDT.StateCRDT
                     newContents[key] = gca.Payload[key] > gcb.Payload[key] ? gca.Payload[key] : gcb.Payload[key];
             }
 
-            // TODO: Need to get the largest version from gca or gcb and increment by one
+            // grab the largest vclock and increment
+            var newClock = gca.VectorClock >= gcb.VectorClock ? gca.VectorClock : gcb.VectorClock;
+            newClock++;
+
             return new GCounter(actor ?? DefaultActorId(),
-                                counterContents: newContents);
+                                counterContents: newContents)
+            {
+                VectorClock = newClock
+            };
         }
 
         public static GCounter Prune(GCounter gc, string actor = null)
