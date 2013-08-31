@@ -199,24 +199,24 @@ namespace MoarDT.CRDT.Causality
                     leftBigger = true;
                     leftPos++;
                 }
-
-                // check for stragglers
-                if (leftPos < left._versions.Count)
-                    leftBigger = true;
-                else if (rightPos < right._versions.Count)
-                    rightBigger = true;
-
-                // if both vclocks are "not bigger", the one on the left wins.
-                // viva el reloj vector del proletariado!
-                if (!leftBigger && !rightBigger)
-                    return (int)Occurs.Before;
-                else if (leftBigger && !rightBigger)
-                    return (int)Occurs.After;
-                else if (!leftBigger && rightBigger)
-                    return (int)Occurs.Before;
-                else
-                    return (int)Occurs.Concurrently;
             }
+
+            // check for stragglers
+            if (leftPos < left._versions.Count)
+                leftBigger = true;
+            else if (rightPos < right._versions.Count)
+                rightBigger = true;
+
+            // if both vclocks are "not bigger", the one on the left wins.
+            // viva el reloj vector del proletariado!
+            if (!leftBigger && !rightBigger)
+                return (int)Occurs.Before;
+            else if (leftBigger && !rightBigger)
+                return (int)Occurs.After;
+            else if (!leftBigger && rightBigger)
+                return (int)Occurs.Before;
+            else
+                return (int)Occurs.Concurrently;
         }
 
         public override string ToString()
