@@ -20,7 +20,7 @@ using MoarDT.CRDT.Causality;
 
 namespace MoarDT.CRDT.StateCRDT
 {
-    public class PNCounter : AbstractCRDT, IEquatable<PNCounter>
+    public class PNCounter : AbstractCRDT, IEquatable<PNCounter>, IComparable, IComparable<PNCounter>
     {
         internal GCounter P;
         internal GCounter N;
@@ -142,6 +142,36 @@ namespace MoarDT.CRDT.StateCRDT
         public static PNCounter Prune(PNCounter pnc, int actor)
         {
             return new PNCounter(actor, pnc.Value);
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return 1;
+
+            if (obj is PNCounter)
+                return CompareTo((PNCounter)obj);
+            else
+                throw new ArgumentException("obj is not PNCounter");
+        }
+
+        public int CompareTo(PNCounter Y)
+        {
+            return Compare(this, Y);
+        }
+
+        public static int Compare(PNCounter X, PNCounter Y)
+        {
+            /* In theory, equality is defined as:
+             * let b = (∀i ∈ [0,n − 1] : X.P[i] ≤ Y.P[i] ∧ ∀i ∈ [0,n − 1] : X.N[i] ≤ Y.N[i])
+             * 
+             * I suspect we could extrapolate some delightfully complex comparison for
+             * PNCounters, but the truth is that we really only compare about the Value
+             */
+            if (ReferenceEquals(X, null) || ReferenceEquals(Y, null))
+                throw new NullReferenceException("Cannot compare null values with non-null values");
+
+            return X.Value.CompareTo(Y.Value);
         }
     }
 }
