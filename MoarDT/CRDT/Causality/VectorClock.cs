@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MoarDT.Extensions;
+using System.Collections.ObjectModel;
 
 namespace MoarDT.CRDT.Causality
 {
@@ -32,6 +33,14 @@ namespace MoarDT.CRDT.Causality
         public long Timestamp { get; private set; }
         
         private List<VVPair> _versions;
+
+        public ReadOnlyCollection<VVPair> Versions 
+        {
+            get 
+            {
+                return _versions.AsReadOnly();
+            }
+        }
 
         public VectorClock() : this(Environment.TickCount) { }
 
@@ -109,7 +118,7 @@ namespace MoarDT.CRDT.Causality
             if (ReferenceEquals(null, other))
                 return false;
 
-            if (_versions.Count != other._versions.Count)
+            if (Versions.Count != other.Versions.Count)
                 return false;
 
             /* A potentially better solution is listed at 
@@ -118,7 +127,7 @@ namespace MoarDT.CRDT.Causality
              * This will required addtional time to implement and, frankly, the below 
              * falls into Works For Me territory.
              */
-            return Enumerable.SequenceEqual(_versions.OrderBy(t => t), other._versions.OrderBy(t => t));
+            return Enumerable.SequenceEqual(Versions.OrderBy(t => t), other.Versions.OrderBy(t => t));
         }
 
         public override int GetHashCode() {
@@ -129,11 +138,11 @@ namespace MoarDT.CRDT.Causality
         {
             var newClock = new VectorClock();
 
-            var allVersions = _versions.FullOuterJoin(other._versions, 
-                                                      v1 => v1.Actor, 
-                                                      v2 => v2.Actor, 
-                                                      (v1, v2, Actor) => new {v1, v2})
-                                       .ToList();
+            var allVersions = Versions.FullOuterJoin(other.Versions, 
+                                                     v1 => v1.Actor, 
+                                                     v2 => v2.Actor, 
+                                                     (v1, v2, Actor) => new {v1, v2})
+                                      .ToList();
 
             foreach (var v in allVersions)
             {
@@ -181,10 +190,10 @@ namespace MoarDT.CRDT.Causality
             int leftPos = 0;
             int rightPos = 0;
 
-            while (leftPos < left._versions.Count && rightPos < right._versions.Count)
+            while (leftPos < left.Versions.Count && rightPos < right.Versions.Count)
             {
-                var leftVV = left._versions[leftPos];
-                var rightVV = right._versions[rightPos];
+                var leftVV = left.Versions[leftPos];
+                var rightVV = right.Versions[rightPos];
 
                 if (leftVV.Actor == rightVV.Actor)
                 {
@@ -213,9 +222,9 @@ namespace MoarDT.CRDT.Causality
             }
 
             // check for stragglers
-            if (leftPos < left._versions.Count)
+            if (leftPos < left.Versions.Count)
                 leftBigger = true;
-            else if (rightPos < right._versions.Count)
+            else if (rightPos < right.Versions.Count)
                 rightBigger = true;
 
             // if both vclocks are "not bigger", the one on the left wins.
@@ -237,7 +246,7 @@ namespace MoarDT.CRDT.Causality
             sb.Append("{timestamp = ");
             sb.Append(Timestamp);
             sb.Append(", versions = [");
-            sb.Append(String.Join(",", _versions));
+            sb.Append(String.Join(",", Versions));
             sb.Append("]}");
 
             return sb.ToString();
